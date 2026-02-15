@@ -80,7 +80,7 @@ public class ClienteVotos {
             System.out.println("\n<<< VOTO CONFIRMADO >>>\n");
             System.out.println(resultado);
 
-        } catch (RemoteException e) {
+        } catch (RemoteException | NotBoundException e) {
             System.err.println("\n[ERRO] " + e.getMessage());
         }
 
