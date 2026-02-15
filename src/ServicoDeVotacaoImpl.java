@@ -8,16 +8,30 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServicoDeVotacaoImpl extends UnicastRemoteObject implements ServicoDeVotacao, ServicoDeResultados {
     //nome do cndidato > quantidade de votos
     private final Map<String, Integer> mapaDeVotos; // nome candidato e qtd de votos
-    private final Set<String> eleitoresQueVotaram; // eleitores que já votaram
+    private final Set<String> registroEleitores; // eleitores que já votaram
+    private String[] candidatos;
 
-    private ServicoDeVotacaoImpl() throws RemoteException {
+    ServicoDeVotacaoImpl() throws RemoteException {
         super();
         this.mapaDeVotos = new HashMap<>();
-        this.eleitoresQueVotaram = ConcurrentHashMap.newKeySet();
+        this.registroEleitores = ConcurrentHashMap.newKeySet();
+
+        // lista de candidatos
+        this.candidatos = new String[]{
+                "Candidato 01",
+                "Candidato 02",
+                "Candidato 03",
+                "Candidato 04"
+        };
+
+        // mapa de votos com zero votos para cada candidato
+        for (String candidato : candidatos) {
+            mapaDeVotos.put(candidato, 0);
+        }
     }
 
     @Override
-    public synchronized void votar(String eleitor, String candidato) throws RemoteException {
+    public synchronized String votar(String eleitor, String candidato) throws RemoteException {
 
         try {
             if (eleitor == null || eleitor.trim().isEmpty()) {
@@ -26,7 +40,7 @@ public class ServicoDeVotacaoImpl extends UnicastRemoteObject implements Servico
             if (candidato == null || candidato.trim().isEmpty()) {
                 throw new IllegalArgumentException("-> O candidato não pode ser vazio :(");
             }
-            if (eleitoresQueVotaram.contains(eleitor.trim())) {
+            if (registroEleitores.contains(eleitor.trim())) {
                 throw new IllegalArgumentException("-> Eleitor: " + eleitor + " já votou :)");
             }
             if (!mapaDeVotos.containsKey(candidato)) {
@@ -34,15 +48,14 @@ public class ServicoDeVotacaoImpl extends UnicastRemoteObject implements Servico
             }
 
             mapaDeVotos.put(candidato, mapaDeVotos.get(candidato) + 1);
-            eleitoresQueVotaram.add(eleitor.trim());
+            registroEleitores.add(eleitor.trim());
 
             String mensagem = "-> VOTO REGISTRADO\n-> Eleitor: " + eleitor +
                     "\n -> Candidato: " + candidato;
             System.out.println("<VOTO>\n " + mensagem);
 
-        } catch (IllegalArgumentException e) {
-            System.err.println("[ERRO] " + e.getMessage());
-            throw new RemoteException(e.getMessage(), e);
+            return mensagem;
+
         } catch (Exception e) {
             System.err.println("[ERRO] Erro inesperado ao processar voto: " + e.getMessage());
             throw new RemoteException("Erro ao processar voto: " + e.getMessage(), e);
@@ -50,8 +63,35 @@ public class ServicoDeVotacaoImpl extends UnicastRemoteObject implements Servico
 
     }
 
+    @Override
+    public boolean verificaVoto(String eleitor) throws RemoteException {
+
+        try {
+            if (eleitor == null || eleitor.trim().isEmpty()) {
+                return false;
+            }
+            return registroEleitores.contains(eleitor.trim());
+        } catch (Exception e) {
+            System.err.println("[ERRO]: " + e.getMessage());
+            throw new RemoteException("[ERRO]: ", e);
+        }
+
+    }
+
+    @Override
+    public String[] getCandidatos() throws RemoteException {
+
+        try {
+            return candidatos.clone();
+        } catch (Exception e) {
+            System.err.println("[ERRO]: " + e.getMessage());
+            throw new RemoteException("[ERRO]: ", e);
+        }
+
+    }
+
+    @Override
     public Map<String, Integer> getResultados() throws RemoteException {
-        //(sincronizado p evitar leitura enquanto alguem esta escrevendo[
         synchronized (this) {
             return new HashMap<>(mapaDeVotos);
         }
