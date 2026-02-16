@@ -7,9 +7,7 @@ public class Servidor {
             ServicoDeVotacaoImpl servicoVotacao = new ServicoDeVotacaoImpl();
             Registry registro = LocateRegistry.createRegistry(1099);
             registro.rebind("VotacaoService", servicoVotacao);
-
-            ServicoDeVotacaoImpl servicoResultados = new ServicoDeVotacaoImpl();
-            registro.rebind("ServicoResultados", servicoResultados);
+            registro.rebind("ServicoResultados", servicoVotacao);
 
             System.out.println("servidor de votacao esta online...");
         } catch (Exception e) {
