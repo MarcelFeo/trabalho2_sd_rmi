@@ -1,67 +1,41 @@
-### Visão Geral do Projeto
+# Visão Geral do Projeto
 
 O objetivo é criar uma aplicação onde eleitores votam remotamente em candidatos através de uma interface RMI, com os resultados centralizados em um servidor.
-+1
 
-Requisitos do Sistema
-Java JDK instalado.
+## Requisitos do Sistema
+- Java JDK instalado.
+- RMI Registry para registro dos objetos remotos.
+- Estrutura de dados para armazenamento de votos.
+  
+## Estrutura do Projeto
 
+### 1. Servidor e Implementação
+Responsáveis pela lógica de negócio e disponibilização dos serviços na rede.
 
-RMI Registry para registro dos objetos remotos.
+* **Servidor.java**
+    * Inicializa o servidor e cria o registro RMI
 
-Estrutura de dados para armazenamento de votos.
+* **ServicoDeVotacaoImpl.java**
+    * Armazena os votos em um hashmap e o registro de quem já votou em um set (para impedir votos duplicados)
+    * Também implementa as interfaces ServicoDeVotacao e ServicoDeResultados
 
-### Guia de Desenvolvimento Passo a Passo
-1. Definição das Interfaces Remotas
-   Crie as interfaces que estendem java.rmi.Remote. Elas definem os métodos que podem ser chamados pelos clientes.
-   
+### 2. Interfaces
+Definem os métodos que podem ser invocados remotamente pelos clientes.
 
+* **ServicoDeVotacao.java**
+    * Interface utilizada pelo cliente de votação
 
-ServicoDeVotacao: Deve conter o método void votar(String eleitor, String candidato).
+* **ServicoDeResultados.java**
+    * Interface utilizada pelo cliente de apuração
 
+### 3. Clientes
+Aplicações de terminal para interação com o usuário final.
 
-ServicoDeResultados: Deve conter um método que retorne um Map<String, Integer> com o total de votos por candidato.
+* **ClienteVotos.java**
+    * Interface para o eleitor
 
+* **ClienteResultado.java**
+    * Interface para apuração, solicita os dados atuais e exibe uma tabela formatada no console contendo os candidatos e seus respectivos totais de votos.
 
-2. Implementação da Lógica (ServicoDeVotacaoImpl)
-   Crie a classe que implementa ambas as interfaces acima.
-
-Utilize uma estrutura de dados (como HashMap) para rastrear os votos.
-
-Implemente o tratamento de exceções, especificamente RemoteException.
-
-3. Configuração do Servidor RMI
-   Desenvolva a classe servidora responsável por:
-
-Instanciar o objeto remoto ServicoDeVotacaoImpl.
-
-Registrar o objeto no Naming ou Registry do RMI para que os clientes o encontrem.
-
-4. Cliente de Votação
-   Implemente o cliente que interage com o eleitor. O fluxo deve ser:
-
-Solicitar o nome do eleitor.
-
-Exibir a lista de candidatos disponíveis.
-
-Capturar a escolha do eleitor.
-
-Invocar o método votar remotamente.
-
-Exibir a confirmação do voto recebida do servidor.
-
-5. Cliente de Consulta (Resultados)
-   Crie um cliente adicional focado em monitoramento.
-   
-
-Ele deve chamar os métodos da interface ServicoDeResultados para exibir o placar atualizado da votação.
-
-### Informações de Entrega
-
-Data Limite: 18/02/2026.
-
-Formato: Individual ou em dupla.
-
-Plataforma: Todos os arquivos devem ser enviados via Microsoft Teams.
-
-Gostaria que eu gerasse um exemplo de código inicial para a interface ServicoDeVotacao seguindo essas especificações?
+---
+### Pedro Souza Ferreira & Marcel Fernando Lobo de Feo
