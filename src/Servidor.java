@@ -8,7 +8,8 @@ public class Servidor {
             Registry registro = LocateRegistry.createRegistry(1099);
             registro.rebind("VotacaoService", servicoVotacao);
 
-
+            ServicoDeVotacaoImpl servicoResultados = new ServicoDeVotacaoImpl();
+            registro.rebind("ServicoResultados", servicoResultados);
 
             System.out.println("servidor de votacao esta online...");
         } catch (Exception e) {

@@ -16,10 +16,7 @@ public class ClienteResultado {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            System.out.println("=".repeat(70));
-            System.out.println("SISTEMA DE CONSULTA DE RESULTADOS DA VOTAÇÃO");
-            System.out.println("=".repeat(70));
-            System.out.println();
+            System.out.println("<<< RESULTADOS >>>\n");
 
             // Conecta ao registro RMI
             System.out.println("Conectando ao servidor...");
@@ -28,7 +25,7 @@ public class ClienteResultado {
                     (ServicoDeResultados) registry.lookup(NOME_SERVICO);
             System.out.println("[OK] Conectado ao servidor!\n");
 
-            exibirResultadosCompletos(servicoResultados);
+            mostrarResultados(servicoResultados);
 
 
         } catch (RemoteException | NotBoundException e) {
@@ -37,19 +34,18 @@ public class ClienteResultado {
 
     }
 
-    private static void exibirResultadosCompletos(ServicoDeResultados servico)
+    private static void mostrarResultados(ServicoDeResultados servico)
             throws RemoteException {
         Map<String, Integer> resultados = servico.getResultados();
 
-        System.out.println("<<< RESULTADOS DA VOTAÇÃO >>>");
-        System.out.printf("%-30s | %-15s |", "CANDIDATO", "VOTOS");
+        System.out.printf("%-30s | %-15s |\n", "CANDIDATO", "VOTOS");
 
 
         for (Map.Entry<String, Integer> entry : resultados.entrySet()) {
             String candidato = entry.getKey();
             int votos = entry.getValue();
 
-            System.out.printf("%-30s | %-15d |", candidato, votos);
+            System.out.printf("%-30s | %-15d |\n", candidato, votos);
         }
 
     }
